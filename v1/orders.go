@@ -59,6 +59,24 @@ func (s *OrderService) All() ([]Order, error) {
 	return v, nil
 }
 
+// History ...
+func (s *OrderService) History(limit int) ([]Order, error) {
+	req, err := s.client.newAuthenticatedRequest("POST", "hist", map[string]interface{}{
+		"limit": limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	v := []Order{}
+	_, err = s.client.do(req, &v)
+	if err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
 // CancelAll active orders for the authenticated account.
 func (s *OrderService) CancelAll() error {
 	req, err := s.client.newAuthenticatedRequest("POST", "order/cancel/all", nil)
