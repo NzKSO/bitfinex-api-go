@@ -28,7 +28,7 @@ type Client struct {
 	BaseURL                *url.URL
 	WebSocketURL           string
 	WebSocketTLSSkipVerify bool
-	client                 *http.Client
+	httpClient             *http.Client
 
 	// Auth data
 	APIKey    string
@@ -59,7 +59,7 @@ type Client struct {
 func NewClient() *Client {
 	baseURL, _ := url.Parse(BaseURL)
 
-	c := &Client{BaseURL: baseURL, WebSocketURL: WebSocketURL, client: &http.Client{}}
+	c := &Client{BaseURL: baseURL, WebSocketURL: WebSocketURL, httpClient: &http.Client{}}
 	c.Pairs = &PairsService{client: c}
 	c.Stats = &StatsService{client: c}
 	c.Account = &AccountService{client: c}
@@ -156,7 +156,7 @@ var httpDo = func(req *http.Request) (*http.Response, error) {
 
 // Do executes API request created by NewRequest method or custom *http.Request.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	resp, err := httpDo(req)
+	resp, err := c.httpClient.Do(req)
 
 	if err != nil {
 		return nil, err
@@ -241,5 +241,6 @@ func checkResponse(r *Response) error {
 func (c *Client) SetProxy(proxy *url.URL) {
 	transport := http.DefaultTransport.(*http.Transport)
 	transport.Proxy = http.ProxyURL(proxy)
-	c.client.Transport = transport
+
+	c.httpClient.Transport = transport
 }
