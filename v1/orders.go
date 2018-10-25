@@ -43,8 +43,8 @@ type Order struct {
 	ExecutedAmount    string `json:"executed_amount"`
 }
 
-// All returns all orders for the authenticated account.
-func (s *OrderService) All() ([]Order, error) {
+// Active returns all orders for the authenticated account.
+func (s *OrderService) Active() ([]Order, error) {
 	req, err := s.client.newAuthenticatedRequest("GET", "orders", nil)
 	if err != nil {
 		return nil, err
